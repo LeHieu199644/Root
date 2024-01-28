@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./lib",
+    "rootDir": "./src",
+    "lib": ["es6", "dom"],
+    "useUnknownInCatchVariables": false,
+    "noImplicitAny": false
+  },
+  "include": [
+    "./src"
+  ]
+}
