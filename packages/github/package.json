@@ -1,0 +1,51 @@
+{
+  "name": "@actions/github",
+  "version": "5.1.1",
+  "description": "Actions github lib",
+  "keywords": [
+    "github",
+    "actions"
+  ],
+  "homepage": "https://github.com/actions/toolkit/tree/main/packages/github",
+  "license": "MIT",
+  "main": "lib/github.js",
+  "types": "lib/github.d.ts",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib",
+    "!.DS_Store"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/actions/toolkit.git",
+    "directory": "packages/github"
+  },
+  "scripts": {
+    "audit-moderate": "npm install && npm audit --json --audit-level=moderate > audit.json",
+    "test": "jest",
+    "build": "tsc",
+    "format": "prettier --write **/*.ts",
+    "format-check": "prettier --check **/*.ts",
+    "tsc": "tsc"
+  },
+  "bugs": {
+    "url": "https://github.com/actions/toolkit/issues"
+  },
+  "dependencies": {
+    "@actions/http-client": "file:../http-client/actions-http-client-3.0.0.tgz",
+    "@octokit/core": "^4.2.4",
+    "@octokit/plugin-paginate-rest": "^6.1.2",
+    "@octokit/plugin-rest-endpoint-methods": "^7.2.3"
+  },
+  "devDependencies": {
+    "@types/proxy": "^1.0.1",
+    "proxy": "^2.1.1",
+    "undici": "^5.25.2"
+  }
+}
