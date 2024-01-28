@@ -1,0 +1,79 @@
+# Temporarily disabled while v2.0.0 of @actions/artifact is under development
+
+name: artifact-unit-tests
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  build:
+    name: Build
+
+    strategy:
+      matrix:
+        runs-on: [ubuntu-latest, windows-latest, macos-latest]
+      fail-fast: false
+
+    runs-on: ${{ matrix.runs-on }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set Node.js 16.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16.x
+
+    # Need root node_modules because certain npm packages like jest are configured for the entire repository and it won't be possible
+    # without these to just compile the artifacts package
+    - name: Install root npm packages
+      run: npm ci
+
+    - name: Compile artifact package
+      run: |
+        npm ci
+        npm run tsc
+      working-directory: packages/artifact
+
+    - name: Set artifact file contents
+      shell: bash
+      run: |
+        echo "file1=hello from file 1" >> $GITHUB_ENV
+        echo "file2=hello from file 2" >> $GITHUB_ENV
+
+    - name: Create files that will be uploaded
+      run: |
+        mkdir artifact-path
+        echo '${{ env.file1 }}' > artifact-path/first.txt
+        echo '${{ env.file2 }}' > artifact-path/second.txt
+
+    - uses: actions/github-script@v6
+      with:
+        script: |
+            const artifact = require('./packages/artifact/lib/artifact')
+
+            const artifactName = 'my-artifact-${{ matrix.runs-on }}'
+            console.log('artifactName: ' + artifactName)
+
+            const fileContents = ['artifact-path/first.txt','artifact-path/second.txt']
+
+            const uploadResult = await artifact.create().uploadArtifact(artifactName, fileContents, './')
+            console.log(uploadResult)
+
+            const success = uploadResult.success
+            const size = uploadResult.size
+            const id = uploadResult.id
+
+            if (!success) {
+              throw new Error('Failed to upload artifact')
+            } else {
+              console.log(`Successfully uploaded artifact ${id}`)
+            }
+           
